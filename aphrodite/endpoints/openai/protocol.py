@@ -4,6 +4,7 @@ import json
 import time
 from typing import Any, Dict, List, Literal, Optional, Union
 
+import pydantic
 import torch
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from transformers import PreTrainedTokenizer
@@ -13,6 +14,7 @@ from aphrodite.common.pooling_params import PoolingParams
 from aphrodite.common.sampling_params import (LogitsProcessorFunc,
                                               SamplingParams)
 from aphrodite.common.sequence import Logprob
+from aphrodite.common.passthru import Passthru
 from aphrodite.common.utils import random_uuid
 from aphrodite.endpoints.chat_utils import ChatCompletionMessageParam
 from aphrodite.endpoints.openai.logits_processors import get_logits_processors
@@ -149,6 +151,7 @@ class ChatCompletionRequest(OpenAIBaseModel):
     prompt_logprobs: Optional[int] = None
     xtc_threshold: Optional[float] = 0.1
     xtc_probability: Optional[float] = 0.0
+    passthru: Passthru = pydantic.Field(default_factory= lambda: Passthru(foo=-4, bar=''))
     dry_multiplier: Optional[float] = 0
     dry_base: Optional[float] = 1.75
     dry_allowed_length: Optional[int] = 2
@@ -307,6 +310,7 @@ class ChatCompletionRequest(OpenAIBaseModel):
             temperature_last=self.temperature_last,
             xtc_threshold=self.xtc_threshold,
             xtc_probability=self.xtc_probability,
+            passthru=self.passthru,
             dry_multiplier=self.dry_multiplier,
             dry_base=self.dry_base,
             dry_allowed_length=self.dry_allowed_length,
@@ -425,6 +429,7 @@ class CompletionRequest(OpenAIBaseModel):
     prompt_logprobs: Optional[int] = None
     xtc_threshold: Optional[float] = 0.1
     xtc_probability: Optional[float] = 0.0
+    passthru: Passthru = pydantic.Field(default_factory= lambda:Passthru(foo=-5, bar=''))
     dry_multiplier: Optional[float] = 0
     dry_base: Optional[float] = 1.75
     dry_allowed_length: Optional[int] = 2
@@ -542,6 +547,7 @@ class CompletionRequest(OpenAIBaseModel):
             temperature_last=self.temperature_last,
             xtc_threshold=self.xtc_threshold,
             xtc_probability=self.xtc_probability,
+            passthru=self.passthru,
             dry_multiplier=self.dry_multiplier,
             dry_base=self.dry_base,
             dry_allowed_length=self.dry_allowed_length,
@@ -583,7 +589,7 @@ class CompletionRequest(OpenAIBaseModel):
             raise ValueError(
                 "Stream options can only be defined when stream is True.")
         return data
-    
+
     @model_validator(mode='before')
     @classmethod
     def parse_dry_sequence_breakers(cls, data):
@@ -596,11 +602,11 @@ class CompletionRequest(OpenAIBaseModel):
                 except json.JSONDecodeError as e:
                     raise ValueError(f"Invalid JSON for dry_sequence_breakers:"
                                      f" {e}") from e
-                
+
             # Validate that we now have a list of strings
             is_list = isinstance(data['dry_sequence_breakers'], list)
             all_strings = all(
-                isinstance(x, str) 
+                isinstance(x, str)
                 for x in data['dry_sequence_breakers']
             )
             if not is_list or not all_strings:
@@ -608,7 +614,7 @@ class CompletionRequest(OpenAIBaseModel):
                     "dry_sequence_breakers must be a list of strings or a "
                     "JSON string representing a list of strings"
                 )
-        
+
         return data
 
 
@@ -880,6 +886,7 @@ class KAIGenerationInputSchema(BaseModel):
     smoothing_curve: Optional[float] = 1.0
     xtc_threshold: Optional[float] = 0.1
     xtc_probability: Optional[float] = 0.0
+    passthru: Passthru = pydantic.Field(default_factory= lambda:Passthru(foo=-6, bar=''))
     use_default_badwordsids: Optional[bool] = None
     quiet: Optional[bool] = None
     # pylint: disable=unexpected-keyword-arg

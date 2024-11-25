@@ -16,7 +16,10 @@ from zmq import SUB, SUBSCRIBE, XPUB, XPUB_VERBOSE, Context  # type: ignore
 from aphrodite.common.utils import get_ip, get_open_port
 
 APHRODITE_RINGBUFFER_WARNING_INTERVAL = os.getenv(
-    "APHRODITE_RINGBUFFER_WARNING_INTERVAL", 60)
+    "APHRODITE_RINGBUFFER_WARNING_INTERVAL",
+    # 60,
+    300,
+    )
 
 # time to wait if the queue is full or empty
 # if we sleep for too short, it will consume too much CPU

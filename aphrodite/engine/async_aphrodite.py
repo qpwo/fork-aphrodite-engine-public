@@ -19,6 +19,7 @@ from aphrodite.common.pooling_params import PoolingParams
 from aphrodite.common.sampling_params import SamplingParams
 from aphrodite.common.sequence import (ExecuteModelRequest, SamplerOutput,
                                        SequenceGroupMetadata)
+from aphrodite.common.passthru import Passthru
 from aphrodite.engine.aphrodite_engine import (AphroditeEngine,
                                                DecoderPromptComponents,
                                                PromptComponents)
@@ -35,7 +36,10 @@ from aphrodite.processing.scheduler import SchedulerOutputs
 from aphrodite.prompt_adapter.request import PromptAdapterRequest
 
 ENGINE_ITERATION_TIMEOUT_S = int(
-    os.environ.get("APHRODITE_ENGINE_ITERATION_TIMEOUT_S", "60"))
+    os.environ.get("APHRODITE_ENGINE_ITERATION_TIMEOUT_S", 
+    # "60",
+    "300",
+    ))
 
 
 class AsyncEngineDeadError(RuntimeError):
@@ -352,7 +356,7 @@ class _AsyncAphrodite(AphroditeEngine):
         self.do_log_stats(scheduler_outputs, output)
 
         return request_outputs
-    
+
     def _has_remaining_steps(
         self, seq_group_metadata_list: Optional[List[SequenceGroupMetadata]]
     ) -> bool:
@@ -498,6 +502,7 @@ class _AsyncAphrodite(AphroditeEngine):
         request_id: str,
         lora_request: Optional[LoRARequest] = None,
         prompt_adapter_request: Optional[PromptAdapterRequest] = None,
+        passthru: Passthru = Passthru(foo=-8, bar=''),
     ) -> LLMInputs:
         """Async version of :meth:`_process_decoder_only_prompt`."""
         prompt_comps = await self._extract_prompt_components_async(
@@ -509,6 +514,7 @@ class _AsyncAphrodite(AphroditeEngine):
         return self._build_decoder_only_llm_inputs(
             prompt_comps,
             prompt_adapter_request=prompt_adapter_request,
+            passthru=passthru,
         )
 
     async def process_model_inputs_async(
@@ -517,6 +523,7 @@ class _AsyncAphrodite(AphroditeEngine):
         request_id: str,
         lora_request: Optional[LoRARequest] = None,
         prompt_adapter_request: Optional[PromptAdapterRequest] = None,
+        passthru: Passthru = Passthru(foo=-9, bar=''),
     ) -> Union[LLMInputs, EncoderDecoderLLMInputs]:
         """Async version of :meth:`process_model_inputs`."""
         if self.is_encoder_decoder_model():
@@ -537,6 +544,7 @@ class _AsyncAphrodite(AphroditeEngine):
                 request_id=request_id,
                 lora_request=lora_request,
                 prompt_adapter_request=prompt_adapter_request,
+                passthru=passthru,
             )
 
         return self.input_processor(model_inputs)
@@ -557,11 +565,15 @@ class _AsyncAphrodite(AphroditeEngine):
         if arrival_time is None:
             arrival_time = time.time()
 
+        passthru = None
+        if isinstance(params, SamplingParams):
+            passthru = params.passthru
         processed_inputs = await self.process_model_inputs_async(
             inputs,
             request_id=request_id,
             lora_request=lora_request,
             prompt_adapter_request=prompt_adapter_request,
+            passthru=passthru
         )
 
         self._add_processed_request(
@@ -973,7 +985,7 @@ class AsyncAphrodite:
             prompt_token_ids: The token IDs of the prompt. If None, we
                 use the tokenizer to convert the prompts to token IDs.
             lora_request: LoRA request to use for generation, if any.
-            prompt_adapter_request: Prompt Adapter request to use 
+            prompt_adapter_request: Prompt Adapter request to use
                                             for generation, if any.
 
         Yields:

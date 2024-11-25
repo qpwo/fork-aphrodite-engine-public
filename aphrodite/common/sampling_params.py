@@ -10,6 +10,8 @@ import torch
 from loguru import logger
 from typing_extensions import Annotated
 
+from aphrodite.common.passthru import Passthru
+
 _SAMPLING_EPS = 1e-5
 _MAX_TEMP = 1e-2
 
@@ -151,6 +153,8 @@ class SamplingParams(
             above this threshold, consider removing all but the last one.
         xtc_probability: Probability that the removal will actually happen.
             0 disables the sampler, 1 makes it always happen.
+        passthru: (development only) Args passed through to model
+
         nsigma: Number of standard deviations from the maximum logit to use
             as a cutoff threshold. Tokens with logits below
             (max_logit - nsgima * std_dev) are filtered out. Higher values
@@ -221,6 +225,7 @@ class SamplingParams(
     truncate_prompt_tokens: Optional[Annotated[int, msgspec.Meta(ge=1)]] = None
     xtc_threshold: float = 0.1
     xtc_probability: float = 0
+    passthru: Passthru = msgspec.field(default_factory=lambda: Passthru(foo=-1, bar=''))
     nsigma: float = 0.0
     dry_multiplier: float = 0.0
     dry_base: float = 1.75
@@ -273,6 +278,7 @@ class SamplingParams(
         "truncate_prompt_tokens": None,
         "xtc_threshold": 0.1,
         "xtc_probability": 0,
+        "passthru": None,
         "nsigma": 0.0,
         "dry_multiplier": 0.0,
         "dry_base": 1.75,
