@@ -3,6 +3,8 @@ from typing import (TYPE_CHECKING, Generic, Iterable, List, Optional, Tuple,
 
 from typing_extensions import NotRequired, TypedDict, TypeVar
 
+from aphrodite.common.passthrough import Passthrough
+
 if TYPE_CHECKING:
     from aphrodite.multimodal import MultiModalDataDict
 
@@ -64,7 +66,7 @@ _T2_co = TypeVar("_T2_co",
 # TODO: Make fields ReadOnly once mypy supports it
 class ExplicitEncoderDecoderPrompt(TypedDict, Generic[_T1_co, _T2_co]):
     """Represents an encoder/decoder model input prompt,
-    comprising an explicit encoder prompt and a 
+    comprising an explicit encoder prompt and a
     decoder prompt.
     The encoder and decoder prompts, respectively,
     may formatted according to any of the
@@ -115,6 +117,7 @@ class LLMInputs(TypedDict):
     Optional multi-modal data to pass to the model,
     if the model supports it.
     """
+    passthrough: NotRequired[Optional[Passthrough]]
 
 
 class EncoderDecoderLLMInputs(LLMInputs):
@@ -131,6 +134,7 @@ class EncoderDecoderLLMInputs(LLMInputs):
     The original encoder prompt text corresponding to the token IDs, if
     available.
     """
+    passthrough: NotRequired[Optional[Passthrough]]
 
 
 _T1 = TypeVar("_T1",

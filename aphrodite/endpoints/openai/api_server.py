@@ -256,7 +256,7 @@ async def show_version():
 async def serviceinfo():
     """Return service information including version, API endpoints,
     and documentation URLs."""
-    
+
     return JSONResponse(content={
         "version": 0.2,
         "software": {
@@ -274,7 +274,7 @@ async def serviceinfo():
                 "version": 1,
             },
             "koboldai": {
-                "name": "KoboldAI API", 
+                "name": "KoboldAI API",
                 "rel_url": "/api",
                 "documentation": "/redoc",
                 "version": 1,
@@ -322,7 +322,7 @@ async def create_embedding(request: EmbeddingRequest, raw_request: Request):
                             status_code=generator.code)
     else:
         return JSONResponse(content=generator.model_dump())
-    
+
 
 @router.post("/v1/lora/load")
 async def load_lora(lora: LoRAModulePath):
@@ -414,6 +414,7 @@ def prepare_engine_payload(
         seed=kai_payload.sampler_seed,
         xtc_probability=kai_payload.xtc_probability,
         xtc_threshold=kai_payload.xtc_threshold,
+        passthrough=kai_payload.passthrough,
     )
 
     max_input_tokens = max(
@@ -748,7 +749,7 @@ async def init_app(
 
     if args.launch_kobold_api:
         _set_badwords(tokenizer, model_config.hf_config)
-    
+
     return app
 
 

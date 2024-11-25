@@ -30,6 +30,7 @@ from transformers import LlamaConfig
 from aphrodite.attention import Attention, AttentionMetadata
 from aphrodite.common.config import CacheConfig, LoRAConfig
 from aphrodite.common.sequence import IntermediateTensors, SamplerOutput
+from aphrodite.common.passthrough import Passthrough
 from aphrodite.common.utils import is_hip
 from aphrodite.distributed import (get_current_tp_rank_partition_size,
                                    get_pp_group,
@@ -311,6 +312,7 @@ class LlamaModel(nn.Module):
         intermediate_tensors: Optional[IntermediateTensors],
         inputs_embeds: Optional[torch.Tensor] = None,
     ) -> Union[torch.Tensor, IntermediateTensors]:
+        pass
         if get_pp_group().is_first_rank:
             if inputs_embeds is not None:
                 hidden_states = inputs_embeds
@@ -340,6 +342,12 @@ class LlamaModel(nn.Module):
         hidden_states, _ = self.norm(hidden_states, residual)
         return hidden_states
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+def stampy():
+    pacific_time = datetime.now(ZoneInfo("America/Los_Angeles"))
+    return pacific_time.strftime("%Y-%m-%d--%I-%M-%S.%f")[:-3] + pacific_time.strftime("%p").lower()
 
 class LlamaForCausalLM(nn.Module, SupportsLoRA):
     packed_modules_mapping = {
@@ -441,7 +449,11 @@ class LlamaForCausalLM(nn.Module, SupportsLoRA):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
     ) -> Union[torch.Tensor, IntermediateTensors]:
+        rank = get_tensor_model_parallel_rank()
+        print_once(f"{rank=} {passthrough=}")
+        # print(f"{stampy()} {rank=} {passthrough=}")
         model_output = self.model(input_ids, positions, kv_caches,
                                   attn_metadata, intermediate_tensors)
         return model_output
@@ -588,3 +600,9 @@ class LlamaForCausalLM(nn.Module, SupportsLoRA):
             if item in mapping and mapping[item] not in name:
                 name = name.replace(item, mapping[item])
         return name, loaded_weight
+
+_printed = set()
+def print_once(key, *args, **kwargs):
+    if key not in _printed:
+        _printed.add(key)
+        print(key, *args, **kwargs)

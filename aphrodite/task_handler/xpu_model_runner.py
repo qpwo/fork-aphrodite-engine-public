@@ -199,6 +199,7 @@ class XPUModelRunner(ModelRunnerBase[ModelInputForXPU]):
                 block_tables=None,
                 lora_request=None,
                 multi_modal_data=dummy_multi_modal_data,
+                passthrough=sampling_params.passthrough,
             )
             seqs.append(seq)
 

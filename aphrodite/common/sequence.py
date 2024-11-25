@@ -13,6 +13,7 @@ import torch
 
 from aphrodite.common.pooling_params import PoolingParams
 from aphrodite.common.sampling_params import SamplingParams
+from aphrodite.common.passthrough import Passthrough
 from aphrodite.constants import APHRODITE_TOKEN_ID_ARRAY_TYPE
 from aphrodite.inputs.parse import is_valid_encoder_decoder_llm_inputs
 from aphrodite.lora.request import LoRARequest
@@ -175,7 +176,7 @@ class SequenceData(msgspec.Struct,
     @property
     def prompt_token_ids_array(self) -> array:
         """Return the prompt token ids in array type.
-        
+
         Note that the array is in "I" type, and it's not
         compatible with torch.long (2 bytes vs 4 bytes).
         Beware!
@@ -195,7 +196,7 @@ class SequenceData(msgspec.Struct,
     @property
     def output_token_ids_array(self) -> array:
         """Return the output token ids in array type.
-        
+
         Note that the array is in "I" type, and it's not
         compatible with torch.long (2 bytes vs 4 bytes).
         Beware!
@@ -565,7 +566,6 @@ class SequenceGroup:
                      unless you are working with an encoder/decoder model.
         prompt_adapter_request: Prompt adapter request.
     """
-
     def __init__(
         self,
         request_id: str,
@@ -711,7 +711,7 @@ class SequenceGroup:
     ) -> List[Sequence]:
         if status is None:
             return self.seqs
-        
+
         if self.is_single_seq:
             return self.seqs if self.seqs[0].status == status else []
 
@@ -753,7 +753,7 @@ class SequenceGroup:
         # filter by states.
         if status is None:
             return len(self.seqs)
-        
+
         if self.is_single_seq:
             return 1 if self.seqs[0].status == status else 0
 
@@ -809,7 +809,7 @@ class SequenceGroupMetadataDelta(
     array_like=True,
     omit_defaults=True):
     """Delta of SequenceGroupMetadata.
-    
+
     After sending the first SequenceGroupMetadata, Aphrodite scheduler
     only sends delta to reduce the data payload size.
     """
@@ -850,7 +850,7 @@ class SequenceGroupMetadata(
             used in prefix caching.
         multi_modal_data: Multi modal data.
         encoder_seq_data: Optional sequence data for encoder prompt
-                          (SequenceGroup.encoder_seq). Should be None 
+                          (SequenceGroup.encoder_seq). Should be None
                           unless you are working with an encoder/decoder
                           model.
         cross_block_table: Optional cross-attention block table associated
@@ -913,6 +913,7 @@ class SequenceGroupMetadata(
     sampling_params: SamplingParams
     block_tables: Dict[int, List[int]]
     do_sample: bool = True
+    passthrough: Optional[Passthrough] = None
     pooling_params: Optional[PoolingParams] = None
     lora_request: Optional[LoRARequest] = None
     computed_block_nums: Optional[List[int]] = None
