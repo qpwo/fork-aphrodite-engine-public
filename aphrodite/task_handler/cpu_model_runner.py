@@ -358,7 +358,7 @@ class CPUModelRunner(ModelRunnerBase[CPUModelInput]):
             "kv_caches":
             kv_caches,
             "attn_metadata":
-            model_input.attn_metadata,
+            model_input.attn_metadata, # TODO:Luke?
             **MultiModalInputs.as_kwargs(model_input.multi_modal_kwargs or {},
                                          device=self.device),
         }

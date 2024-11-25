@@ -24,6 +24,7 @@ from aphrodite.common.sequence import (EmbeddingSequenceGroupOutput,
                                        SamplerOutput, Sequence, SequenceGroup,
                                        SequenceGroupMetadata, SequenceStatus)
 from aphrodite.common.utils import Counter, Device
+from aphrodite.common.passthrough import Passthrough
 from aphrodite.engine.args_tools import EngineArgs
 from aphrodite.engine.metrics_types import StatLoggerBase, Stats
 from aphrodite.engine.output_processor.interfaces import (
@@ -103,7 +104,7 @@ class AphroditeEngine:
             decoding.
         executor_class: The model executor class for managing distributed
             execution.
-        prompt_adapter_config (Optional): The configuration related to serving 
+        prompt_adapter_config (Optional): The configuration related to serving
             prompt adapters.
         log_stats: Whether to log statistics.
     """
@@ -711,7 +712,7 @@ class AphroditeEngine:
         Here, this behavior is approximated by having the
         "default" decoder prompt be <BOS>.
         However, it is possible that in the future
-        other models may have different or more 
+        other models may have different or more
         complex logic for the default decoder prompt.
         This motivates having a special helper method
         for default decoder prompts.
@@ -769,7 +770,7 @@ class AphroditeEngine:
         have any possible singleton type; thus this
         method relies on helper functions to obtain
         token ids for the sub-prompts.
-        
+
         Arguments:
         * inputs: an input prompt
         * request_id
@@ -807,6 +808,7 @@ class AphroditeEngine:
         self,
         prompt_comps: PromptComponents,
         prompt_adapter_request: Optional[PromptAdapterRequest],
+        passthrough: Passthrough = Passthrough(foo=-7, bar=''),
     ) -> LLMInputs:
         prompt, prompt_token_ids, multi_modal_data = prompt_comps
 
@@ -815,7 +817,8 @@ class AphroditeEngine:
 
         return LLMInputs(prompt_token_ids=prompt_token_ids,
                          prompt=prompt,
-                         multi_modal_data=multi_modal_data)
+                         multi_modal_data=multi_modal_data,
+                         passthrough=passthrough)
 
     def _process_decoder_only_prompt(
         self,

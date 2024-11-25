@@ -325,6 +325,7 @@ class BatchExpansionTop1Scorer(SpeculativeScorer):
             },
             lora_request=None,
             token_chunk_size=1,
+            passthrough=sampling_params.passthrough,
         )
 
     def _split_scoring_output(
