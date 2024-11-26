@@ -414,6 +414,7 @@ def prepare_engine_payload(
         seed=kai_payload.sampler_seed,
         xtc_probability=kai_payload.xtc_probability,
         xtc_threshold=kai_payload.xtc_threshold,
+        passthrough=kai_payload.passthrough,
     )
 
     max_input_tokens = max(

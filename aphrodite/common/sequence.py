@@ -13,6 +13,7 @@ import torch
 
 from aphrodite.common.pooling_params import PoolingParams
 from aphrodite.common.sampling_params import SamplingParams
+from aphrodite.common.passthrough import Passthrough
 from aphrodite.constants import APHRODITE_TOKEN_ID_ARRAY_TYPE
 from aphrodite.inputs.parse import is_valid_encoder_decoder_llm_inputs
 from aphrodite.lora.request import LoRARequest
@@ -913,6 +914,7 @@ class SequenceGroupMetadata(
     sampling_params: SamplingParams
     block_tables: Dict[int, List[int]]
     do_sample: bool = True
+    passthrough: Optional[Passthrough] = None
     pooling_params: Optional[PoolingParams] = None
     lora_request: Optional[LoRARequest] = None
     computed_block_nums: Optional[List[int]] = None
