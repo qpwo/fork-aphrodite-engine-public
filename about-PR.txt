@@ -1,0 +1,8 @@
+- A `passthrough` will come in on either SamplingParams or PoolingParams.
+- The goal is to pass it around and get it all the way to `model_executable(**execute_model_kwargs)`.
+- So we need to get `passthrough` onto `ModelInputForXPU`, the open vino thing, `ModelInputForGPU`, `ModelInputForNeuron`, and `ModelInputForTPU`.
+- I only implemented distributed stuff for GPU I think.
+- A function has access to the `passthrough` if it gets SamplingParams or PoolingParams or LLMInputs or EncoderDecoderLLMInputs.
+- I think `passthrough' travels between GPUs and nodes/machines along ModelInputForGPUBuilder.InterDataForSeqGroup?
+- Not sure this is how you're supposed to do all this.
+- Seems to work for me.
