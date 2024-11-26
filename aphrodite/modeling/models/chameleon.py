@@ -11,6 +11,7 @@ from transformers import ChameleonConfig, ChameleonVQVAEConfig
 
 from aphrodite.attention import Attention, AttentionMetadata
 from aphrodite.common.config import CacheConfig, MultiModalConfig
+from aphrodite.common.passthrough import Passthrough
 from aphrodite.common.sequence import (IntermediateTensors, SamplerOutput,
                                        SequenceData)
 from aphrodite.common.utils import print_warning_once
@@ -956,6 +957,7 @@ class ChameleonForConditionalGeneration(nn.Module, SupportsMultiModal):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
         **kwargs,
     ) -> torch.Tensor:
 

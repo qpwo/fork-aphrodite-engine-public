@@ -28,6 +28,7 @@ from transformers import CLIPVisionConfig, PretrainedConfig
 
 from aphrodite.attention import AttentionMetadata
 from aphrodite.common.config import CacheConfig, ModelConfig, MultiModalConfig
+from aphrodite.common.passthrough import Passthrough
 from aphrodite.common.sequence import IntermediateTensors, SamplerOutput
 from aphrodite.inputs import INPUT_REGISTRY, InputContext, LLMInputs
 from aphrodite.modeling.layers.logits_processor import LogitsProcessor
@@ -562,6 +563,7 @@ class Phi3VForCausalLM(nn.Module, SupportsMultiModal):
                 kv_caches: List[torch.Tensor],
                 attn_metadata: AttentionMetadata,
                 intermediate_tensors: Optional[IntermediateTensors] = None,
+                passthrough: Optional[Passthrough] = None,
                 **kwargs: object):
         image_input = self._parse_and_validate_image_input(**kwargs)
 
