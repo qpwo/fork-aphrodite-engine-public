@@ -956,6 +956,7 @@ class ChameleonForConditionalGeneration(nn.Module, SupportsMultiModal):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
         **kwargs,
     ) -> torch.Tensor:
 

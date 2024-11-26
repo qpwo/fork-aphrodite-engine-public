@@ -297,6 +297,7 @@ class LlavaForConditionalGeneration(nn.Module, SupportsMultiModal):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
         **kwargs: object,
     ) -> SamplerOutput:
         """Run forward pass for LLaVA-1.5.

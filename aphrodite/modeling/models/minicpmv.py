@@ -618,6 +618,7 @@ class MiniCPMVBaseModel(nn.Module, SupportsMultiModal):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
         **kwargs: Any,
     ) -> torch.Tensor:
         image_inputs = self._parse_and_validate_inputs(input_ids, **kwargs)

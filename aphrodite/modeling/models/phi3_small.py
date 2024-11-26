@@ -416,6 +416,7 @@ class Phi3SmallForCausalLM(nn.Module):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
     ) -> torch.Tensor:
         output_hidden_states = self.model(
             input_ids=input_ids,

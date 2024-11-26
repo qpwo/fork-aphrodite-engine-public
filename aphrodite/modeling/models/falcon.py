@@ -385,6 +385,7 @@ class FalconForCausalLM(nn.Module):
         kv_caches: List[torch.Tensor],
         attn_metadata: AttentionMetadata,
         intermediate_tensors: Optional[IntermediateTensors] = None,
+        passthrough: Optional[Passthrough] = None,
     ) -> torch.Tensor:
         hidden_states = self.transformer(
             input_ids,

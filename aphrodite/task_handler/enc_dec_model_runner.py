@@ -300,6 +300,7 @@ class EncoderDecoderModelRunner(GPUModelRunnerBase[EncoderDecoderModelInput]):
                 block_tables=None,
                 encoder_seq_data=seq_data,
                 cross_block_table=None,
+                passthrough=sampling_params.passthrough,
             )
             seqs.append(seq)
 
